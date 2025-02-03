@@ -41,6 +41,3 @@
 [NPM] Caso esteja utilizando o npm direto sua maquina é necessário desligar o npm com ctrl+c e executar novamente o comando:
 ```bash
    npm run start:dev
-
-
-
