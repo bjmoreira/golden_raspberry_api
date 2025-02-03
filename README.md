@@ -34,7 +34,7 @@
 ## Para trocar os dados do banco
 
 1. Abra a pasta data e localize o arquivo Movielist.csv
-2. Substitua os dados mantendo a estrutura dos campos e cabeçalho ou substirua o arquivo inteiro mantendo o mesmo nome de arquivo, estrutura de campos e cabeçalho.
+2. Substitua os dados mantendo a estrutura dos campos e cabeçalho ou substitua o arquivo inteiro mantendo o mesmo nome de arquivo, estrutura de campos e cabeçalho.
 
 
 
