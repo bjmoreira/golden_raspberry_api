@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    container_name: golden_raspberry_api
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run start:dev
