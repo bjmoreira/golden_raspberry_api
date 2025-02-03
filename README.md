@@ -35,6 +35,7 @@
 
 1. Abra a pasta data e localize o arquivo Movielist.csv
 2. Substitua os dados mantendo a estrutura dos campos e cabeçalho ou substitua o arquivo inteiro mantendo o mesmo nome de arquivo, estrutura de campos e cabeçalho.
+3. Caso esteja utilizando o Docker é necessário usar o comando `docker-compose down`, depois novamente o comando `docker-compose up`, se não utilizar o docker-compose e subir diretamente os containers, é necessário baixalos e subir novamente para que o arquivo modificado seja copiado para dentro do container. Vide Dockerfile.
 
 
 
