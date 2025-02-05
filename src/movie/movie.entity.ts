@@ -18,6 +18,6 @@ export class Movie {
   producers: string;
 
   @Column()
-  winner: boolean; // Modificado para refletir o tipo de "winner" (verdadeiro ou falso)
+  winner: string;
 }
 

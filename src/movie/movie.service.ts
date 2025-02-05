@@ -26,8 +26,8 @@ export class MovieService implements OnModuleInit {
             title: data.title,
             studios: data.studios,
             producers: data.producers,
-            winner: data.winner === 'TRUE',
-          } as Movie);
+            winner: data.winner.trim().toUpperCase() === 'YES'
+          } as unknown as Movie);
         }
       })
       .on('end', async () => {
@@ -47,46 +47,53 @@ export class MovieService implements OnModuleInit {
   async getPrizeIntervals(movies: Movie[]) {
     if (movies.length === 0) throw new Error('Nenhum filme foi fornecido');
   
-    
-    const producersMap = movies.reduce((acc, { producers, year }) => {
-      if (!acc[producers]) acc[producers] = [];
-      acc[producers].push(year);
+    const expandedMovies = movies.flatMap(({ producers, year, studios, winner }) => {
+      const producersList = producers
+        .split(/,| and /)
+        .map(producer => producer.trim());
+  
+      return producersList.map(producer => ({
+        producer,
+        year: Number(year),
+        studios,
+        winner
+      }));
+    }).filter(movie => Number(movie.winner) === 1);
+  
+    const producersMap = expandedMovies.reduce((acc, { producer, year }) => {
+      if (!acc[producer]) acc[producer] = [];
+      acc[producer].push(year);
       return acc;
     }, {} as Record<string, number[]>);
   
-    
-    const allIntervals = Object.entries(producersMap)
-      .map(([producer, years]) => {
-        const sortedYears = years.sort((a, b) => a - b);
+    const allIntervals: { producer: string, interval: number, previousWin: number, followingWin: number }[] = [];
   
-        
-        return sortedYears
-          .map((year, i) => sortedYears.slice(i + 1).map(nextYear => ({
-            interval: nextYear - year - 1, // Diferença exclusiva
-            previousWin: year,
-            followingWin: nextYear
-          })))
-          .flat();
-      })
-      .flat();
+    // Percorrer os anos de cada produtor e calcular os intervalos corretamente
+    Object.entries(producersMap).forEach(([producer, years]) => {
+      const sortedYears = years.sort((a, b) => a - b);
   
-    
+      for (let i = 0; i < sortedYears.length - 1; i++) {
+        allIntervals.push({
+          producer,
+          interval: sortedYears[i + 1] - sortedYears[i],
+          previousWin: sortedYears[i],
+          followingWin: sortedYears[i + 1]
+        });
+      }
+    });
+  
+    // Encontrar os valores mínimo e máximo
     const maxInterval = allIntervals.reduce((max, current) => 
       current.interval > max.interval ? current : max
-    , { interval: -Infinity });
+    , { producer: '', interval: -Infinity, previousWin: 0, followingWin: 0 });
   
-    // Filtrar os intervalos sem o maior intervalo encontrado
-    const filteredIntervals = allIntervals.filter(interval => interval.interval !== maxInterval.interval);
-  
-    // Recalcular o maior intervalo após a remoção do maior intervalo
-    const maxIntervalAfterRemoval = filteredIntervals.reduce((max, current) => 
-      current.interval > max.interval ? current : max
-    , { interval: -Infinity });
+    const minInterval = allIntervals.reduce((min, current) => 
+      current.interval < min.interval ? current : min
+    , { producer: '', interval: Infinity, previousWin: 0, followingWin: 0 });
   
     return {
-      max: maxIntervalAfterRemoval ? maxIntervalAfterRemoval : maxInterval
+      min: [minInterval],
+      max: [maxInterval]
     };
   }
-  
-  
 }
